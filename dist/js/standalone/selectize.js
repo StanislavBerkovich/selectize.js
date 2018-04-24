@@ -635,7 +635,7 @@
 }));
 
 /**
- * selectize.js (v0.12.4)
+ * selectize.js (v0.12.5)
  * Copyright (c) 2013–2015 Brian Reavis & contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -1664,6 +1664,7 @@
 					if (self.settings.create && self.createItem()) {
 						e.preventDefault();
 					}
+					self.close()
 					return;
 				case KEY_BACKSPACE:
 				case KEY_DELETE:
