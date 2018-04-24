@@ -537,6 +537,7 @@ $.extend(Selectize.prototype, {
 				if (self.settings.create && self.createItem()) {
 					e.preventDefault();
 				}
+				self.close()
 				return;
 			case KEY_BACKSPACE:
 			case KEY_DELETE:
