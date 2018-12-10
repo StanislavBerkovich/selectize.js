@@ -1017,18 +1017,19 @@
 					return;
 				case KEY_TAB:
 					if (self.settings.selectOnTab && !e.shiftKey && self.isOpen && self.$activeOption) {
+						var value = self.getValueByOption(self.$activeOption);
 						self.onOptionSelect({currentTarget: self.$activeOption});
 	
 						// Default behaviour is to jump to the next field, we only want this
 						// if the current field doesn't accept any more entries
-						if (!self.isFull()) {
+						if (!self.isBlankOption(value) && !self.isFull()) {
 							e.preventDefault();
 						}
 					}
 					if (self.settings.create && self.createItem()) {
 						e.preventDefault();
 					}
-					self.close()
+					self.close();
 					return;
 				case KEY_BACKSPACE:
 				case KEY_DELETE:
@@ -1040,6 +1041,10 @@
 				e.preventDefault();
 				return;
 			}
+		},
+	
+		getValueByOption: function (option) {
+			return $(option).attr('data-value')
 		},
 	
 		/**
@@ -1189,7 +1194,7 @@
 					}
 				});
 			} else {
-				value = $target.attr('data-value');
+				value = self.getValueByOption($target);
 				if (typeof value !== 'undefined') {
 					self.lastQuery = null;
 					self.setTextboxValue('');
@@ -1950,6 +1955,13 @@
 			this.buffer = null;
 		},
 	
+		isBlankOption: function(value) {
+			if (value !== '') return false
+	
+			var $textWrapper = $(this.render('item', this.options[value])).find('.item');
+			return !$textWrapper.text()
+		},
+	
 		/**
 		 * "Selects" an item. Adds it to the list
 		 * at the current caret position.
@@ -1975,9 +1987,12 @@
 				if (!self.options.hasOwnProperty(value)) return;
 				if (inputMode === 'single') self.clear(silent);
 				if (inputMode === 'multi' && self.isFull()) return;
+				if(self.isBlankOption(value)) return;
+	
+				wasFull = self.isFull();
 	
 				$item = $(self.render('item', self.options[value]));
-				wasFull = self.isFull();
+	
 				self.items.splice(self.caretPos, 0, value);
 				self.insertAtCaret($item);
 				if (!self.isPending || (!wasFull && self.isFull())) {
